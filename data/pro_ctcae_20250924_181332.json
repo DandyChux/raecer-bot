@@ -1,0 +1,57 @@
+{
+  "pro_ctcae_version": "1.0",
+  "assessment_date": "20250924_181332",
+  "entries": [
+    {
+      "symptom_term": "Hives",
+      "code": "PRO-CTCAE_hives",
+      "patient_reported_text": "hives",
+      "presence": true
+    },
+    {
+      "symptom_term": "Itching",
+      "code": "PRO-CTCAE_itching",
+      "patient_reported_text": "itching",
+      "severity": {
+        "value": 1,
+        "label": "Mild"
+      }
+    },
+    {
+      "symptom_term": "Swelling",
+      "code": "PRO-CTCAE_swelling",
+      "patient_reported_text": "swelling",
+      "severity": {
+        "value": 1,
+        "label": "Mild"
+      },
+      "frequency": {
+        "value": 2,
+        "label": "Occasionally"
+      },
+      "interference": {
+        "value": 1,
+        "label": "A Little Bit"
+      }
+    },
+    {
+      "symptom_term": "Anxious",
+      "code": "PRO-CTCAE_anxiety",
+      "patient_reported_text": "Patient expressed concerns",
+      "severity": {
+        "value": 1,
+        "label": "Mild"
+      },
+      "frequency": {
+        "value": 2,
+        "label": "Occasionally"
+      },
+      "interference": {
+        "value": 1,
+        "label": "A Little Bit"
+      }
+    }
+  ],
+  "source_file": "patient_summary_20250924_181332.json",
+  "clinical_summary": "PRO-CTCAE Assessment Summary:\n----------------------------------------\nMILD: Hives (PRO-CTCAE_hives), Itching (PRO-CTCAE_itching), Swelling (PRO-CTCAE_swelling), Anxious (PRO-CTCAE_anxiety)\n----------------------------------------\nTotal symptoms reported: 4\n"
+}

@@ -1,0 +1,23 @@
+{
+  "pro_ctcae_version": "1.0",
+  "assessment_date": "20250927_210216",
+  "entries": [
+    {
+      "symptom_term": "Hives",
+      "code": "PRO-CTCAE_hives",
+      "patient_reported_text": "hives",
+      "presence": true
+    },
+    {
+      "symptom_term": "Itching",
+      "code": "PRO-CTCAE_itching",
+      "patient_reported_text": "itching",
+      "severity": {
+        "value": 1,
+        "label": "Mild"
+      }
+    }
+  ],
+  "source_file": "data/patient_summary_20250927_210216.json",
+  "clinical_summary": "PRO-CTCAE Assessment Summary:\n----------------------------------------\nMILD: Hives (PRO-CTCAE_hives), Itching (PRO-CTCAE_itching)\n----------------------------------------\nTotal symptoms reported: 2\n"
+}

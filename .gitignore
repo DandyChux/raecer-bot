@@ -1,0 +1,14 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+.venv
+
+# Artifacts
+*.log
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+
+.env*

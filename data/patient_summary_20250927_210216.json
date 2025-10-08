@@ -1,0 +1,12 @@
+{
+    "has_previous_reaction": true,
+    "has_kidney_issues": false,
+    "takes_metformin": false,
+    "reported_symptoms": [
+        "hives",
+        "itching",
+        "hyperventilation"
+    ],
+    "patient_concerns": "The patient is anxious about the upcoming exam and is worried about experiencing a similar reaction as before.",
+    "full_summary": "The patient has a history of allergic reactions to contrast dye, including hives, itching, and hyperventilation. They do not have any known kidney issues or diabetes, and they do not take Metformin. The patient expressed anxiety about their upcoming exam, primarily due to concerns about experiencing a similar reaction."
+}

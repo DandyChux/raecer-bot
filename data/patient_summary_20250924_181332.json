@@ -1,0 +1,12 @@
+{
+    "has_previous_reaction": true,
+    "has_kidney_issues": false,
+    "takes_metformin": false,
+    "reported_symptoms": [
+        "hives",
+        "itching",
+        "swelling"
+    ],
+    "patient_concerns": "no concerns at the moment",
+    "full_summary": "The patient has previously had a reaction to contrast dye, experiencing symptoms such as hives, itching, and swelling. They do not have any known kidney issues or diabetes, and they are not currently taking Metformin. At this time, the patient has expressed no specific concerns about their upcoming exam."
+}
