@@ -1,0 +1,34 @@
+{
+  "pro_ctcae_version": "1.0",
+  "assessment_date": "20251022_124954",
+  "entries": [
+    {
+      "symptom_term": "Itching",
+      "code": "PRO-CTCAE_itching",
+      "patient_reported_text": "itching",
+      "severity": {
+        "value": 1,
+        "label": "Mild"
+      }
+    },
+    {
+      "symptom_term": "Anxious",
+      "code": "PRO-CTCAE_anxiety",
+      "patient_reported_text": "Patient expressed concerns",
+      "severity": {
+        "value": 1,
+        "label": "Mild"
+      },
+      "frequency": {
+        "value": 2,
+        "label": "Occasionally"
+      },
+      "interference": {
+        "value": 1,
+        "label": "A Little Bit"
+      }
+    }
+  ],
+  "source_file": "data/patient_summary_20251022_124954.json",
+  "clinical_summary": "PRO-CTCAE Assessment Summary:\n----------------------------------------\nMILD: Itching (PRO-CTCAE_itching), Anxious (PRO-CTCAE_anxiety)\n----------------------------------------\nTotal symptoms reported: 2\n"
+}
