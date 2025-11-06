@@ -399,11 +399,11 @@ if __name__ == "__main__":
         initialize_services()
         print("=" * 60)
         print("✅ All services initialized successfully!")
-        print("\n📡 Starting Flask server on http://0.0.0.0:8080")
-        print("📚 API documentation available at http://localhost:8080/")
+        print("\n📡 Starting Flask server on http://0.0.0.0:8000")
+        print("📚 API documentation available at http://localhost:8000/")
         print("\nPress CTRL+C to stop the server\n")
 
-        app.run(host="0.0.0.0", port=8080, debug=True)
+        app.run(host="0.0.0.0", port=8000, debug=True)
 
     except Exception as e:
         print(f"\n❌ Failed to start server: {e}")

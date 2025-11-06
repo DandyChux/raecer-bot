@@ -55,7 +55,7 @@ A RESTful API for conducting medical conversations with cancer patients, extract
    python api_server.py
    ```
 
-The API will be available at `http://localhost:8080`
+The API will be available at `http://localhost:8000`
 
 ### Quick Test
 
@@ -63,10 +63,10 @@ Once the server is running:
 
 ```bash
 # Health check
-curl http://localhost:8080/api/health
+curl http://localhost:8000/api/health
 
 # Start a conversation
-curl -X POST http://localhost:8080/api/conversation/start
+curl -X POST http://localhost:8000/api/conversation/start
 ```
 
 ## API Endpoints
@@ -361,7 +361,7 @@ Get API documentation and available endpoints.
 import requests
 import json
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:8000"
 
 def chat_with_cornelius():
     # Start conversation
@@ -420,7 +420,7 @@ if __name__ == "__main__":
 ```javascript
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://localhost:8000';
 
 async function startConversation() {
   const response = await axios.post(`${BASE_URL}/api/conversation/start`);
@@ -471,34 +471,34 @@ async function endConversation(sessionId) {
 
 **Start conversation:**
 ```bash
-curl -X POST http://localhost:8080/api/conversation/start
+curl -X POST http://localhost:8000/api/conversation/start
 ```
 
 **Send message:**
 ```bash
-curl -X POST http://localhost:8080/api/conversation/<SESSION_ID>/message \
+curl -X POST http://localhost:8000/api/conversation/<SESSION_ID>/message \
   -H "Content-Type: application/json" \
   -d '{"message": "I had hives after my last CT scan with contrast dye"}'
 ```
 
 **End conversation:**
 ```bash
-curl -X POST http://localhost:8080/api/conversation/<SESSION_ID>/end
+curl -X POST http://localhost:8000/api/conversation/<SESSION_ID>/end
 ```
 
 **Get status:**
 ```bash
-curl http://localhost:8080/api/conversation/<SESSION_ID>/status
+curl http://localhost:8000/api/conversation/<SESSION_ID>/status
 ```
 
 **List all conversations:**
 ```bash
-curl http://localhost:8080/api/conversations
+curl http://localhost:8000/api/conversations
 ```
 
 **Delete conversation:**
 ```bash
-curl -X DELETE http://localhost:8080/api/conversation/<SESSION_ID>
+curl -X DELETE http://localhost:8000/api/conversation/<SESSION_ID>
 ```
 
 ### Web Frontend Example (HTML + JavaScript)
@@ -526,7 +526,7 @@ curl -X DELETE http://localhost:8080/api/conversation/<SESSION_ID>
     <button onclick="endConversation()">End & Get Summary</button>
 
     <script>
-        const BASE_URL = 'http://localhost:8080';
+        const BASE_URL = 'http://localhost:8000';
         let sessionId = null;
 
         async function startConversation() {
@@ -651,7 +651,7 @@ Sessions are stored in memory using a thread-safe `SessionManager` class:
 Use the cleanup endpoint to remove old sessions:
 
 ```bash
-curl -X POST http://localhost:8080/api/cleanup \
+curl -X POST http://localhost:8000/api/cleanup \
   -H "Content-Type: application/json" \
   -d '{"max_age_hours": 24}'
 ```
@@ -888,8 +888,8 @@ This will:
 python api_server.py
 
 # Terminal 2: Test endpoints
-curl http://localhost:8080/api/health
-curl -X POST http://localhost:8080/api/conversation/start
+curl http://localhost:8000/api/health
+curl -X POST http://localhost:8000/api/conversation/start
 ```
 
 ## Troubleshooting
