@@ -330,21 +330,19 @@ class ProCtcaeMapper:
 
         return entries
 
-    def format_for_ehr_entry(
-        self, entries: list[ProCtcaeEntry]
-    ) -> dict[str, str | list[str] | bool | None]:
+    def format_for_ehr_entry(self, entries: list[ProCtcaeEntry]) -> dict[str, Any]:
         """
         Format PRO-CTCAE entries for EHR system entry
         Returns structured data ready for clinical documentation
         """
-        ehr_data: dict[str, str | list[str] | bool | None] = {
+        ehr_data: dict[str, Any] = {
             "pro_ctcae_version": "1.0",
             "assessment_date": None,  # Will be set when processing
             "entries": [],
         }
 
         for entry in entries:
-            entry_dict: dict[str, str | dict[str, str] | bool | None] = {
+            entry_dict: dict[str, Any] = {
                 "symptom_term": entry.symptom_term,
                 "code": entry.code,
                 "patient_reported_text": entry.raw_text,

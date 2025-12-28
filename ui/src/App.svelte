@@ -7,7 +7,7 @@
 
 <main>
 	<header>
-		<h1>🤖 Cornelius</h1>
+		<h1>🤖 RAECER</h1>
 		<p>Medical History Assistant</p>
 	</header>
 
