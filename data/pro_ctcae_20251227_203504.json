@@ -1,0 +1,25 @@
+{
+  "pro_ctcae_version": "1.0",
+  "assessment_date": "20251227_203504",
+  "entries": [
+    {
+      "symptom_term": "Anxious",
+      "code": "PRO-CTCAE_anxiety",
+      "patient_reported_text": "Patient expressed concerns",
+      "severity": {
+        "value": 1,
+        "label": "Mild"
+      },
+      "frequency": {
+        "value": 2,
+        "label": "Occasionally"
+      },
+      "interference": {
+        "value": 1,
+        "label": "A Little Bit"
+      }
+    }
+  ],
+  "source_file": "data/patient_summary_20251227_203504.json",
+  "clinical_summary": "PRO-CTCAE Assessment Summary:\n----------------------------------------\nMILD: Anxious (PRO-CTCAE_anxiety)\n----------------------------------------\nTotal symptoms reported: 1\n"
+}

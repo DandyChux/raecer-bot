@@ -1,0 +1,11 @@
+{
+    "has_previous_reaction": false,
+    "has_kidney_issues": false,
+    "takes_metformin": false,
+    "reported_symptoms": [
+        "itchy rash",
+        "slight headache"
+    ],
+    "patient_concerns": "No concerns reported",
+    "full_summary": "The patient has no history of reactions to contrast agents or iodine, no kidney issues, and does not take Metformin. They reported experiencing a mild itchy rash on their arms and a slight headache recently. The patient did not express any specific concerns about their upcoming exam."
+}

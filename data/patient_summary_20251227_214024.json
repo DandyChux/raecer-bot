@@ -1,0 +1,11 @@
+{
+    "has_previous_reaction": true,
+    "has_kidney_issues": false,
+    "takes_metformin": false,
+    "reported_symptoms": [
+        "itchy rash on arms",
+        "slight headache"
+    ],
+    "patient_concerns": "No specific concerns reported at this time",
+    "full_summary": "The patient reported a previous reaction to iodinated contrast used during a CT scan, which manifested as a mild itchy rash on the arms and a slight headache. These symptoms resolved within 24 hours with the help of over-the-counter antihistamines and hydration. The patient has no known kidney issues, does not take Metformin, and reported no other allergies. The patient has no specific concerns about the upcoming exam."
+}

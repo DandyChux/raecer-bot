@@ -4,7 +4,7 @@ import os
 from typing import Optional
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
@@ -15,7 +15,7 @@ from pro_ctcae_mapper import ProCtcaeMapper
 from session_manager import ConversationSession, SessionManager
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", static_url_path="")
 CORS(app)  # Enable CORS for all routes
 
 # Initialize global components
@@ -366,8 +366,8 @@ def cleanup_sessions():
     ), 200
 
 
-@app.route("/", methods=["GET"])
-def root():
+@app.route("/api/docs", methods=["GET"])
+def api_docs():
     """API documentation"""
     return jsonify(
         {
@@ -389,6 +389,27 @@ def root():
     ), 200
 
 
+# ==================== Static File Serving ====================
+
+
+@app.route("/")
+def serve_app():
+    """Serve the Svelte app"""
+    if app.static_folder is None:
+        return jsonify({"error": "Static folder not configured"}), 500
+    return send_from_directory(app.static_folder, "index.html")
+
+
+@app.route("/<path:path>")
+def serve_static(path):
+    """Serve static files, fallback to index.html for SPA routing"""
+    if app.static_folder is None:
+        return jsonify({"error": "Static folder not configured"}), 500
+    if os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, "index.html")
+
+
 # ==================== Application Startup ====================
 
 if __name__ == "__main__":
@@ -400,7 +421,7 @@ if __name__ == "__main__":
         print("=" * 60)
         print("✅ All services initialized successfully!")
         print("\n📡 Starting Flask server on http://0.0.0.0:8000")
-        print("📚 API documentation available at http://localhost:8000/")
+        print("📚 API documentation available at http://localhost:8000/api/docs")
         print("\nPress CTRL+C to stop the server\n")
 
         app.run(host="0.0.0.0", port=8000, debug=True)
