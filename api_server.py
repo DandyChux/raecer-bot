@@ -412,20 +412,21 @@ def serve_static(path):
 
 # ==================== Application Startup ====================
 
+
+def create_app():
+    """Factory function for production"""
+    initialize_services()
+    return app
+
+
+# For development
 if __name__ == "__main__":
-    print("🚀 Starting Raecer Bot API Server...")
+    print("🚀 Starting Raecer Bot API Server (Development)...")
     print("=" * 60)
-
-    try:
-        initialize_services()
-        print("=" * 60)
-        print("✅ All services initialized successfully!")
-        print("\n📡 Starting Flask server on http://0.0.0.0:8000")
-        print("📚 API documentation available at http://localhost:8000/api/docs")
-        print("\nPress CTRL+C to stop the server\n")
-
-        app.run(host="0.0.0.0", port=8000, debug=True)
-
-    except Exception as e:
-        print(f"\n❌ Failed to start server: {e}")
-        exit(1)
+    initialize_services()
+    print("✅ All services initialized successfully!")
+    print("\n📡 Starting Flask server on http://0.0.0.0:8000")
+    print("📚 API documentation available at http://localhost:8000/api/docs")
+    print("\nPress CTRL+C to stop the server\n")
+    print("=" * 60)
+    app.run(host="0.0.0.0", port=8000, debug=True)
