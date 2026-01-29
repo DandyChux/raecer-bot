@@ -1,9 +1,9 @@
 # --- Model Configuration ---
 # The specific Hugging Face model we'll use for Named Entity Recognition (NER)
-NER_MODEL_NAME = "medicalai/ClinicalBERT"
+NER_MODEL_NAME = "samrawal/bert-base-uncased_clinical-ner"
 
 # The OpenAI model for generating conversational responses and the final JSON summary
-CONVERSATIONAL_MODEL = "gpt-4"
+CONVERSATIONAL_MODEL = "claude-opus-4-1"
 
 # --- Prompts ---
 

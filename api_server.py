@@ -3,38 +3,38 @@ import json
 import os
 from typing import Optional
 
+from anthropic import Anthropic
+from anthropic.types import MessageParam
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from openai import OpenAI
-from openai.types.chat import ChatCompletionMessageParam
 
 import config
 from ner_extractor import NERExtractor
 from pro_ctcae_mapper import ProCtcaeMapper
 from session_manager import ConversationSession, SessionManager
 
-# Initialize Flask app
-app = Flask(__name__, static_folder="static", static_url_path="")
-CORS(app)  # Enable CORS for all routes
-
 # Initialize global components
 load_dotenv()
 session_manager = SessionManager()
-openai_client: Optional[OpenAI] = None
+anthropic_client: Optional[Anthropic] = None
 ner_client: Optional[NERExtractor] = None
 pro_ctcae_mapper: Optional[ProCtcaeMapper] = None
+
+# Initialize Flask app
+app = Flask(__name__, static_folder="static", static_url_path="")
+CORS(app, origins=os.environ.get("ALLOWED_HOSTS"), supports_credentials=True)
 
 
 def initialize_services():
     """Initialize OpenAI, NER, and PRO-CTCAE services"""
-    global openai_client, ner_client, pro_ctcae_mapper
+    global anthropic_client, ner_client, pro_ctcae_mapper
 
     try:
-        openai_client = OpenAI()
-        print("✅ OpenAI client initialized")
+        anthropic_client = Anthropic()
+        print("✅ Anthropic client initialized")
     except Exception as e:
-        print(f"❌ Error initializing OpenAI client: {e}")
+        print(f"❌ Error initializing Anthropic client: {e}")
         raise
 
     try:
@@ -60,23 +60,31 @@ def generate_summary(
     Returns: (patient_data, pro_ctcae_data, error_message)
     """
     try:
+        if not anthropic_client:
+            raise ValueError("Anthropic client not initialized")
         # Add the extraction prompt
-        extraction_message: ChatCompletionMessageParam = {
+        extraction_message: MessageParam = {
             "role": "user",
             "content": config.JSON_EXTRACTION_PROMPT,
         }
         conversation_history = session.messages + [extraction_message]
 
-        # Get summary from OpenAI
-        response = openai_client.chat.completions.create(
+        if not anthropic_client:
+            raise ValueError("Anthropic client not initialized")
+
+        # Get summary from Anthropic
+        response = anthropic_client.messages.create(
             model=config.CONVERSATIONAL_MODEL,
             messages=conversation_history,
-            temperature=0.0,
+            max_tokens=2048,
+            system=config.SYSTEM_PROMPT,
         )
 
-        message_content = response.choices[0].message.content
-        if message_content is None:
+        # Extract text from Anthropic response
+        if not response.content:
             return None, None, "Model returned no content"
+
+        message_content = response.content[0].text
 
         # Parse JSON
         cleaned_json_string = (
@@ -130,7 +138,7 @@ def health_check():
             "status": "healthy",
             "timestamp": datetime.datetime.now().isoformat(),
             "services": {
-                "openai": openai_client is not None,
+                "openai": anthropic_client is not None,
                 "ner": ner_client is not None and ner_client.pipeline is not None,
                 "pro_ctcae": pro_ctcae_mapper is not None,
             },
@@ -148,19 +156,13 @@ def start_conversation():
         initial_message: The bot's greeting
     """
     try:
-        # Create system prompt message
-        system_message: ChatCompletionMessageParam = {
-            "role": "system",
-            "content": config.SYSTEM_PROMPT,
-        }
-
         # Create new session
-        session = session_manager.create_session(initial_message=system_message)
+        session = session_manager.create_session()
 
         # Generate initial greeting
         initial_greeting = "Hello! I'm Cornelius. To help prepare for your upcoming exam, could you tell me a little about your medical history, especially concerning any past allergies or imaging scans?"
 
-        assistant_message: ChatCompletionMessageParam = {
+        assistant_message: MessageParam = {
             "role": "assistant",
             "content": initial_greeting,
         }
@@ -213,27 +215,35 @@ def send_message(session_id: str):
             extracted_entities = ner_client.extract_entities(user_input)
 
         # Add user message to session
-        user_message: ChatCompletionMessageParam = {
+        user_message: MessageParam = {
             "role": "user",
             "content": user_input,
         }
-        session_manager.add_message(session_id, user_message)
+        session_manager.append_message(session, user_message)
 
-        # Get bot response from OpenAI
-        response = openai_client.chat.completions.create(
-            model=config.CONVERSATIONAL_MODEL, messages=session.messages
+        # Get bot response from Anthropic
+        if not anthropic_client:
+            raise ValueError("Anthropic client not initialized")
+
+        response = anthropic_client.messages.create(
+            model=config.CONVERSATIONAL_MODEL,
+            messages=session.messages,
+            max_tokens=1024,
+            system=config.SYSTEM_PROMPT,
         )
 
-        bot_response = response.choices[0].message.content
-        if bot_response is None:
+        # Extract text from Anthropic response
+        if not response.content:
             return jsonify({"error": "Model returned no response"}), 500
 
+        bot_response = response.content[0].text
+
         # Add bot message to session
-        bot_message: ChatCompletionMessageParam = {
+        bot_message: MessageParam = {
             "role": "assistant",
             "content": bot_response,
         }
-        session_manager.add_message(session_id, bot_message)
+        session_manager.append_message(session, bot_message)
 
         # Check if conversation should end
         conversation_ended = "i have everything i need" in bot_response.lower()
