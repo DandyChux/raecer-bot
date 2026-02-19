@@ -61,10 +61,6 @@
 					entities: response.entities,
 				},
 			];
-
-			if (response.conversation_ended) {
-				await handleEnd();
-			}
 		} catch (e) {
 			error = "Failed to send message. Please try again.";
 			console.error(e);

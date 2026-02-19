@@ -1,4 +1,5 @@
 import datetime
+import glob
 import json
 import os
 from typing import Optional
@@ -62,15 +63,16 @@ def generate_summary(
     try:
         if not anthropic_client:
             raise ValueError("Anthropic client not initialized")
+
+        if not pro_ctcae_mapper:
+            raise ValueError("PRO-CTCAE mapper not initialized")
+
         # Add the extraction prompt
         extraction_message: MessageParam = {
             "role": "user",
             "content": config.JSON_EXTRACTION_PROMPT,
         }
         conversation_history = session.messages + [extraction_message]
-
-        if not anthropic_client:
-            raise ValueError("Anthropic client not initialized")
 
         # Get summary from Anthropic
         response = anthropic_client.messages.create(
@@ -84,7 +86,11 @@ def generate_summary(
         if not response.content:
             return None, None, "Model returned no content"
 
-        message_content = response.content[0].text
+        first_block = response.content[0]
+        if not hasattr(first_block, "text"):
+            return None, None, "Model response did not contain text content"
+
+        message_content = str(first_block.text)
 
         # Parse JSON
         cleaned_json_string = (
@@ -236,7 +242,13 @@ def send_message(session_id: str):
         if not response.content:
             return jsonify({"error": "Model returned no response"}), 500
 
-        bot_response = response.content[0].text
+        first_block = response.content[0]
+        if not hasattr(first_block, "text"):
+            return jsonify(
+                {"error": "Model response did not contain text content"}
+            ), 500
+
+        bot_response = str(first_block.text)
 
         # Add bot message to session
         bot_message: MessageParam = {
@@ -376,6 +388,132 @@ def cleanup_sessions():
     ), 200
 
 
+# ==================== Data File Routes ====================
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+
+
+def require_admin(f):
+    """Decorator to require admin authentication on routes"""
+    from functools import wraps
+
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not ADMIN_PASSWORD:
+            return jsonify({"error": "Admin access is not configured"}), 503
+
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return jsonify({"error": "Unauthorized"}), 401
+
+        token = auth_header[len("Bearer ") :]
+        if token != ADMIN_PASSWORD:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        return f(*args, **kwargs)
+
+    return decorated
+
+
+@app.route("/api/auth/verify", methods=["POST"])
+def verify_admin():
+    """Verify admin password"""
+    if not ADMIN_PASSWORD:
+        return jsonify({"error": "Admin access is not configured"}), 503
+
+    data = request.get_json()
+    if not data or "password" not in data:
+        return jsonify({"error": "Password is required"}), 400
+
+    if data["password"] != ADMIN_PASSWORD:
+        return jsonify({"error": "Invalid password"}), 401
+
+    return jsonify({"authenticated": True}), 200
+
+
+@app.route("/api/data/files", methods=["GET"])
+@require_admin
+def list_data_files():
+    """
+    List all JSON files in the data directory
+
+    Returns:
+            files: Array of file objects with name, size, and modified date
+    """
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        files = []
+        for filepath in sorted(glob.glob(os.path.join(DATA_DIR, "*.json"))):
+            stat = os.stat(filepath)
+            filename = os.path.basename(filepath)
+            files.append(
+                {
+                    "name": filename,
+                    "size": stat.st_size,
+                    "modified": datetime.datetime.fromtimestamp(
+                        stat.st_mtime
+                    ).isoformat(),
+                }
+            )
+        return jsonify({"files": files, "count": len(files)}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/data/files/<filename>", methods=["GET"])
+@require_admin
+def download_data_file(filename: str):
+    """
+    Download a specific file from the data directory
+
+    Args:
+            filename: Name of the file to download
+
+    Returns:
+            The file as a download attachment
+    """
+    # Prevent directory traversal
+    if ".." in filename or "/" in filename or "\\" in filename:
+        return jsonify({"error": "Invalid filename"}), 400
+
+    filepath = os.path.join(DATA_DIR, filename)
+    if not os.path.isfile(filepath):
+        return jsonify({"error": "File not found"}), 404
+
+    return send_from_directory(DATA_DIR, filename, as_attachment=True)
+
+
+@app.route("/api/data/files/<filename>/content", methods=["GET"])
+@require_admin
+def get_data_file_content(filename: str):
+    """
+    Get the JSON content of a specific file
+
+    Args:
+            filename: Name of the file to read
+
+    Returns:
+            The parsed JSON content of the file
+    """
+    # Prevent directory traversal
+    if ".." in filename or "/" in filename or "\\" in filename:
+        return jsonify({"error": "Invalid filename"}), 400
+
+    filepath = os.path.join(DATA_DIR, filename)
+    if not os.path.isfile(filepath):
+        return jsonify({"error": "File not found"}), 404
+
+    try:
+        with open(filepath, "r") as f:
+            content = json.load(f)
+        return jsonify({"filename": filename, "content": content}), 200
+    except json.JSONDecodeError:
+        return jsonify({"error": "File is not valid JSON"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/docs", methods=["GET"])
 def api_docs():
     """API documentation"""
@@ -394,6 +532,9 @@ def api_docs():
                 "DELETE /api/conversation/<session_id>": "Delete a conversation",
                 "GET /api/conversations": "List all conversations",
                 "POST /api/cleanup": "Clean up old sessions",
+                "GET /api/data/files": "List all data files",
+                "GET /api/data/files/<filename>": "Download a data file",
+                "GET /api/data/files/<filename>/content": "Get file JSON content",
             },
         }
     ), 200

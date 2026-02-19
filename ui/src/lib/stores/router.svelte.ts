@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { Summary } from '$lib/api';
 
-export type View = 'chat' | 'results';
+export type View = 'chat' | 'results' | 'files';
 
 export const currentView = writable<View>('chat');
 export const sessionId = writable<string | null>(null);
@@ -16,4 +16,8 @@ export function navigateToChat() {
 	summaryData.set(null);
 	sessionId.set(null);
 	currentView.set('chat');
+}
+
+export function navigateToFiles() {
+	currentView.set('files');
 }
